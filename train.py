@@ -2,6 +2,7 @@ import os
 import csv
 import random
 
+from keras.callbacks import ModelCheckpoint
 from keras.layers import Lambda, Cropping2D, Convolution2D, Activation, Flatten, Dropout, Dense
 from keras.models import Sequential
 from sklearn.utils import shuffle
@@ -9,7 +10,8 @@ from sklearn.model_selection import train_test_split
 
 import cv2
 import numpy as np
-import sklearn
+
+import matplotlib.pyplot as plt
 
 DATA_FILE_PREFIX = "./data/"
 SIDE_CAMERA_OFFSET = 0.25
@@ -26,7 +28,7 @@ with open(DATA_FILE_PREFIX + 'driving_log.csv') as csvfile:
             samples.append(line)
 
 
-train_samples, validation_samples = train_test_split(samples, test_size=0.2)
+train_samples, validation_samples = train_test_split(samples, test_size=0.1)
 
 def random_flip(image, angle):
     rand_flip = random.randint(0, 1)
@@ -88,16 +90,14 @@ model.add(Lambda(lambda x: x/127.5 - 1.))#,
                  # input_shape=(ch, row, col),
                  # output_shape=(ch, row, col)))
 # apply a 5x5 convolution with 64 output filters on a 256x256 image:
-model.add(Convolution2D(24, 5, 5, border_mode='same'))
+model.add(Convolution2D(24, 5, 5, border_mode='same'))#, subsample=(2, 2)))
 model.add(Activation('relu'))
+model.add(Dropout(0.5))
 
 model.add(Convolution2D(36, 5, 5, subsample=(2, 2)))
 model.add(Activation('relu'))
 
-model.add(Convolution2D(48, 5, 5, subsample=(2, 2)))
-model.add(Activation('relu'))
-
-model.add(Convolution2D(64, 3, 3))
+model.add(Convolution2D(48, 5, 5)) #, subsample=(2, 2)))
 model.add(Activation('relu'))
 
 model.add(Convolution2D(64, 3, 3))
@@ -116,10 +116,23 @@ model.add(Activation('relu'))
 model.add(Dense(1))
 
 model.compile(loss='mse', optimizer='adam')
+checkpointer = ModelCheckpoint(filepath="model.h5", verbose=1, save_best_only=True)
 history = model.fit_generator(train_generator,
                     samples_per_epoch=len(train_samples),
                     validation_data=validation_generator,
                     nb_val_samples=len(validation_samples),
-                    nb_epoch=3)
+                    nb_epoch=20, callbacks=[checkpointer])
+### print the keys contained in the history object
+print(history.history.keys())
+
+### plot the training and validation loss for each epoch
+plt.plot(history.history['loss'])
+plt.plot(history.history['val_loss'])
+plt.title('model mean squared error loss')
+plt.ylabel('mean squared error loss')
+plt.xlabel('epoch')
+plt.legend(['training set', 'validation set'], loc='upper right')
+plt.show()
+
 model.save("model.h5")
 
