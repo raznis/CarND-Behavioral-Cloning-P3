@@ -16,7 +16,7 @@ import matplotlib.pyplot as plt
 DATA_FILE_PREFIX = "./data/"
 SIDE_CAMERA_OFFSET = 0.25
 
-TRAIN_NETWORK = False #True
+TRAIN_NETWORK = True
 DOWNSAMPLE_CENTER_PROBABILITY = 0.15 # 0.15
 
 def save_model(filename):
