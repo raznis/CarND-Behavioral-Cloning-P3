@@ -16,7 +16,8 @@ The goals / steps of this project are the following:
 
 [image1]: ./examples/original.png "original histogram"
 [image2]: ./examples/downsampled.png "downsampled histogram"
-[image3]: ./examples/epoches.png "training/validation error during training epoches"
+[image3]: ./examples/final_histogram.png "augmented data histogram"
+[image4]: ./examples/error128.png "training/validation error during training epochs"
 
 ## Rubric Points
 ###Here I will consider the [rubric points](https://review.udacity.com/#!/rubrics/432/view) individually and describe how I addressed each point in my implementation.  
@@ -100,11 +101,14 @@ When loading the data for training, I performed the following augmentations rand
 * loading with equal probability an image from the center/right/left camera, offsetting the angle of side images with +-0.25.
 * flipping the image and the steering angle with probability 0.5.
 * applying random changes to the brightness and saturation of the image with probability 0.3.
-* darkening a random square in the image, with probability 0.3.
+* darkening a random square in the image, with probability 0.3. This was done to handle shadows better.
 
-
-I used this training data for training the model. The validation set helped determine if the model was over or under fitting. The ideal number of epochs was Z as evidenced by the following plot of the training and validation error as a function of epoches:
+Eventually, the following is a histogram of angles that the model trains on (the generated data):
 
 ![alt text][image3]
+
+I used this training data for training the model. The validation set helped determine if the model was over or under fitting. The ideal number of epochs was 10 as evidenced by the following plot of the training and validation error as a function of epochs:
+
+![alt text][image4]
 
 I used an adam optimizer so that manually training the learning rate wasn't necessary.
