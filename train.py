@@ -19,8 +19,6 @@ SIDE_CAMERA_OFFSET = 0.25
 TRAIN_NETWORK = True
 DOWNSAMPLE_CENTER_PROBABILITY = 0.15 # 0.15
 
-
-
 def save_model(filename):
     model.save(filename+".h5")
 
@@ -70,20 +68,29 @@ def random_image_direction(batch_sample):
 
 
 def random_hsv_changes(image):
-    if(random.random() < 0.5):  #TODO - consider lowering this.
-        hsv = cv2.cvtColor(image, cv2.COLOR_RGB2HSV)
-        brighness_alpha = np.random.uniform(0.9,1.1)
+    hsv = cv2.cvtColor(image, cv2.COLOR_RGB2HSV)
+    if(random.random() < 0.3):  #TODO - consider lowering this.
+        brighness_alpha = np.random.uniform(0.7,1.1)
         brighness_beta = random.randint(-64, 64)
         v = hsv[:,:,2]
         v = brighness_alpha * v + brighness_beta
         hsv[:, :, 2] = v.astype('uint8')
 
-        sat_alpha = np.random.uniform(0.9, 1.1)
+        sat_alpha = np.random.uniform(0.7, 1.1)
         sat_beta = random.randint(-64, 64)
         v = hsv[:, :, 1]
         v = sat_alpha * v + sat_beta
         hsv[:, :, 1] = v.astype('uint8')
 
+        rgb = cv2.cvtColor(hsv, cv2.COLOR_HSV2RGB)
+        return rgb
+    if random.random() < 0.45: # darken a polygon
+        w, h, _ = hsv.shape
+        x1, y1 = random.randint(0, w), random.randint(0, h)
+        x2, y2 = random.randint(x1, w), random.randint(y1, h)
+        for i in range(x1,x2):
+            for j in range(y1,y2):
+                hsv[i,j,2] = int(hsv[i,j,2] * 0.5)
         rgb = cv2.cvtColor(hsv, cv2.COLOR_HSV2RGB)
         return rgb
     return image
@@ -187,3 +194,4 @@ angles = []
 #show_histogram(angles, "histogram of generated training samples")
 
 
+# current validation loss is 0.02282
