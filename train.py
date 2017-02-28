@@ -16,10 +16,8 @@ import matplotlib.pyplot as plt
 DATA_FILE_PREFIX = "./data/"
 SIDE_CAMERA_OFFSET = 0.25
 
-TRAIN_NETWORK = True
+TRAIN_NETWORK = False #True
 DOWNSAMPLE_CENTER_PROBABILITY = 0.15 # 0.15
-
-
 
 def save_model(filename):
     model.save(filename+".h5")
@@ -86,7 +84,7 @@ def random_hsv_changes(image):
 
         rgb = cv2.cvtColor(hsv, cv2.COLOR_HSV2RGB)
         return rgb
-    if random.random() < 0.5: # darken a polygon
+    if random.random() < 0.45: # darken a polygon
         w, h, _ = hsv.shape
         x1, y1 = random.randint(0, w), random.randint(0, h)
         x2, y2 = random.randint(x1, w), random.randint(y1, h)
@@ -196,4 +194,4 @@ angles = []
 #show_histogram(angles, "histogram of generated training samples")
 
 
-# current validation loss is 0.02335
+# current validation loss is 0.02282
